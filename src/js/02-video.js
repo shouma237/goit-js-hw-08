@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+
+=======
 import Player from '@vimeo/player';
 import throttle from 'lodash.throttle';
 
@@ -28,3 +31,4 @@ player
         break;
     }
   });
+>>>>>>> b354b90f27c5a6e921b82947885eb61b26279a6e
