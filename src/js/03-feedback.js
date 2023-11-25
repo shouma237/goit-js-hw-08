@@ -1,43 +1,35 @@
 import throttle from 'lodash.throttle';
 
-const feedbackForm = document.querySelector('.feedback-form');
-const emailInput = feedbackForm.querySelector('[name="email"]');
-const messageTextarea = feedbackForm.querySelector('[name="message"]');
+const form = document.querySelector('.feedback-form');
+const inputs = form.querySelectorAll('input, textarea');
+const throttledSaveState = _.throttle(saveState, 500);
 
-feedbackForm.addEventListener(
-  'input',
-  _.throttle(() => {
-    const formData = {
-      email: emailInput.value,
-      message: messageTextarea.value,
-    };
-    localStorage.setItem('feedback-form-state', JSON.stringify(formData));
-  }, 500)
-);
+function saveState() {
+  const formData = {
+    email: inputs[0].value,
+    message: inputs[1].value,
+  };
+  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+  console.log(formData);
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  const storedFormData = localStorage.getItem('feedback-form-state');
-
-  if (storedFormData) {
-    const parsedData = JSON.parse(storedFormData);
-    emailInput.value = parsedData.email;
-    messageTextarea.value = parsedData.message;
-  } else {
-    emailInput.value = '';
-    messageTextarea.value = '';
+function loadState() {
+  const storedData = localStorage.getItem('feedback-form-state');
+  if (storedData) {
+    const formData = JSON.parse(storedData);
+    inputs[0].value = formData.email;
+    inputs[1].value = formData.message;
   }
-});
+}
 
-// Submit event listener
-feedbackForm.addEventListener('submit', event => {
+form.addEventListener('input', throttledSaveState);
+
+form.addEventListener('submit', event => {
   event.preventDefault();
-
+  saveState();
   localStorage.removeItem('feedback-form-state');
-  emailInput.value = '';
-  messageTextarea.value = '';
-
-  console.log('Form submitted with data:', {
-    email: emailInput.value,
-    message: messageTextarea.value,
-  });
+  inputs[0].value = '';
+  inputs[1].value = '';
 });
+
+loadState();
